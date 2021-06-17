@@ -1,0 +1,86 @@
+;
+; KernelHook.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=KernelHook.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+KernelHook_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+KernelHook.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%KernelHook.DeviceDesc%=KernelHook_Device, Root\KernelHook ; TODO: edit hw-id
+
+[KernelHook_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+KernelHook.sys
+
+;-------------- Service installation
+[KernelHook_Device.NT.Services]
+AddService = KernelHook,%SPSVCINST_ASSOCSERVICE%, KernelHook_Service_Inst
+
+; -------------- KernelHook driver install sections
+[KernelHook_Service_Inst]
+DisplayName    = %KernelHook.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\KernelHook.sys
+
+;
+;--- KernelHook_Device Coinstaller installation ------
+;
+
+[KernelHook_Device.NT.CoInstallers]
+AddReg=KernelHook_Device_CoInstaller_AddReg
+CopyFiles=KernelHook_Device_CoInstaller_CopyFiles
+
+[KernelHook_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[KernelHook_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[KernelHook_Device.NT.Wdf]
+KmdfService =  KernelHook, KernelHook_wdfsect
+[KernelHook_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "KernelHook Installation Disk"
+KernelHook.DeviceDesc = "KernelHook Device"
+KernelHook.SVCDESC = "KernelHook Service"
