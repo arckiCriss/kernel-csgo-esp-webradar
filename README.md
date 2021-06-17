@@ -17,9 +17,9 @@ uses [Nvidia overlay hijack](https://github.com/iraizo/nvidia-overlay-hijack) to
 - run UserApp.exe
 
 # Features
-Box ESP with Player details
-Grenade Helper 
-Web Radar
+- Box ESP with Player details
+- Grenade Helper 
+- Web Radar
 
 # Screenshots
 
